@@ -1,0 +1,22 @@
+[
+    {
+        "amount": 500.0,
+        "category": "food",
+        "date": "2026-04-11"
+    },
+    {
+        "amount": 500.0,
+        "category": "groceries",
+        "date": "2026-04-11"
+    },
+    {
+        "amount": 1000.0,
+        "category": "uber",
+        "date": "2026-04-11"
+    },
+    {
+        "amount": 4800.0,
+        "category": "clothes",
+        "date": "2026-04-11"
+    }
+]
