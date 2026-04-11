@@ -7,6 +7,8 @@ from services.analytics import (
 )
 from services.expense_service import deduct_expense, delete_last_expense, update_expense
 from services.expense_service import undo_last_action, fix_last_category
+from services.budget_service import set_budget, get_budget_status
+
 
 router = APIRouter()
 
@@ -131,6 +133,44 @@ async def chat(request: Request):
             return {"response": f"Changed category from {old_cat} to {new_cat}"}
 
         return {"response": "No expense to fix."}
+    
+    # 🔟 Set budget
+    if "set budget" in message:
+        try:
+            words = message.split()
+            amount = float(words[-1])
+            category = words[-2]
+
+            result = set_budget(category, amount)
+            return {"response": result}
+
+        except:
+            return {"response": "Use format: set budget food 20000"}
+        
+
+    # 1️⃣1️⃣ Get budget status
+    if "budget" in message and "status" in message:
+        try:
+            words = message.split()
+            category = words[-1]
+
+        except:
+            return {"response": "Use format: budget status food"}
+
+        result = get_budget_status(category)
+
+        if result:
+            return {
+                "response": f"""
+Budget for {category}:
+Spent: {result['spent']}
+Limit: {result['limit']}
+Remaining: {result['remaining']}
+Used: {result['percent']}%
+"""
+        }
+
+        return {"response": "No budget found for this category."}
     
 
     # Final fallback

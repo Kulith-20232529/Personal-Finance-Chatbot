@@ -2,6 +2,7 @@
 
 import json
 from datetime import datetime
+from services.budget_service import update_budget_spent
 
 DB_FILE = "expenses.json"
 LAST_ACTION_FILE = "last_action.json"
@@ -27,6 +28,9 @@ def save_expense(expense):
         "type": "add",
         "data": expense
     })
+
+    update_budget_spent(expense["category"], expense["amount"])
+
 
 # Delete last expense
 def delete_last_expense():
