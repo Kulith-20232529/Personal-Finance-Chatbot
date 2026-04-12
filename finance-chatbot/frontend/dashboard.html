@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Finance Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        body {
+            font-family: Arial;
+            background: #0f172a;
+            color: white;
+            padding: 20px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .card {
+            background: #1e293b;
+            padding: 20px;
+            border-radius: 12px;
+        }
+
+        .big {
+            grid-column: span 2;
+        }
+
+        canvas {
+            background: white;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+<h1>📊 Finance Dashboard</h1>
+
+<div class="card big">
+    <h2 id="total">Total: ₹0</h2>
+</div>
+
+<div class="grid">
+
+    <div class="card">
+        <h3>Category Breakdown</h3>
+        <canvas id="pieChart"></canvas>
+    </div>
+
+    <div class="card">
+        <h3>Category Comparison</h3>
+        <canvas id="barChart"></canvas>
+    </div>
+
+    <div class="card big">
+        <h3>Spending Over Time</h3>
+        <canvas id="lineChart"></canvas>
+    </div>
+
+    <div class="card big">
+        <h3>Recent Transactions</h3>
+        <ul id="recentList"></ul>
+    </div>
+
+</div>
+
+<script>
+async function loadDashboard() {
+    const res = await fetch("http://127.0.0.1:8000/dashboard");
+    const data = await res.json();
+
+    document.getElementById("total").innerText =
+        "Total Spending: ₹" + data.total;
+
+    const labels = Object.keys(data.breakdown);
+    const values = Object.values(data.breakdown);
+
+    // PIE CHART
+    new Chart(document.getElementById("pieChart"), {
+        type: "pie",
+        data: {
+            labels: labels,
+            datasets: [{ data: values }]
+        }
+    });
+
+    // BAR CHART
+    new Chart(document.getElementById("barChart"), {
+        type: "bar",
+        data: {
+            labels: labels,
+            datasets: [{ data: values }]
+        }
+    });
+
+    // LINE CHART
+    const dates = Object.keys(data.history);
+    const amounts = Object.values(data.history);
+
+    new Chart(document.getElementById("lineChart"), {
+        type: "line",
+        data: {
+            labels: dates,
+            datasets: [{ data: amounts }]
+        }
+    });
+
+    // RECENT TRANSACTIONS
+    const list = document.getElementById("recentList");
+    data.recent.forEach(e => {
+        const li = document.createElement("li");
+        li.innerText = `${e.date} - ₹${e.amount} (${e.category})`;
+        list.appendChild(li);
+    });
+}
+
+loadDashboard();
+</script>
+
+</body>
+</html>
