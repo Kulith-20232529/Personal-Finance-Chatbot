@@ -73,5 +73,30 @@
         "amount": 3000.0,
         "category": "drinks",
         "date": "2026-04-12"
+    },
+    {
+        "amount": 200.0,
+        "category": "uber",
+        "date": "2026-04-12"
+    },
+    {
+        "amount": 8600.0,
+        "category": "clothes",
+        "date": "2026-04-12"
+    },
+    {
+        "amount": 500.0,
+        "category": "food",
+        "date": "2026-04-12"
+    },
+    {
+        "amount": 100.0,
+        "category": "transport",
+        "date": "2026-04-12"
+    },
+    {
+        "amount": 2200.0,
+        "category": "drinks",
+        "date": "2026-04-12"
     }
 ]
