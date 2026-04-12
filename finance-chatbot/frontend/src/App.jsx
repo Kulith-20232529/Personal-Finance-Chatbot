@@ -1,14 +1,7 @@
-import Dashboard from "./components/Dashboard";
-import Chatbot from "./components/Chatbot";
+import ProFinanceDashboard from "./ProFinanceDashboard";
 
 function App() {
-  return (
-    <div>
-      <Dashboard />
-      <hr />
-      <Chatbot />
-    </div>
-  );
+  return <ProFinanceDashboard />;
 }
 
 export default App;

@@ -43,5 +43,20 @@
         "amount": 500.0,
         "category": "transport",
         "date": "2026-04-12"
+    },
+    {
+        "amount": 500.0,
+        "category": "food",
+        "date": "2026-04-12"
+    },
+    {
+        "amount": 500.0,
+        "category": "groceries",
+        "date": "2026-04-12"
+    },
+    {
+        "amount": 500.0,
+        "category": "transport",
+        "date": "2026-04-12"
     }
 ]
