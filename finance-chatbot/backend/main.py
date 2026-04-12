@@ -4,6 +4,8 @@ from routes.chat import router  # Correct: no 'backend.' prefix
 
 app = FastAPI()
 
+expenses = []
+
 # CORS settings
 app.add_middleware(
     CORSMiddleware,
