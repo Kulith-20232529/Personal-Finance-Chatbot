@@ -129,3 +129,8 @@ def fix_last_category(new_category):
         json.dump(expenses, f, indent=4)
 
     return old_category, new_category
+
+def clear_all_expenses():
+    import json
+    with open("expenses.json", "w") as f:
+        json.dump([], f)

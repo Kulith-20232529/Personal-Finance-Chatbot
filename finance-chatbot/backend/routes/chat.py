@@ -10,7 +10,8 @@ from services.expense_service import (
     delete_last_expense,
     update_expense,
     undo_last_action,
-    fix_last_category
+    fix_last_category,
+    clear_all_expenses   # ✅ NEW
 )
 from services.budget_service import set_budget, get_budget_status
 
@@ -41,7 +42,7 @@ def build_response(text: str):
     breakdown = get_category_breakdown()
     return {
         "response": text,
-        "data": breakdown   # 👈 THIS feeds your chart
+        "data": breakdown
     }
 
 
@@ -49,6 +50,17 @@ def build_response(text: str):
 async def chat(request: Request):
     req = await request.json()
     message = req.get("message", "").lower()
+
+    # 🧨 0️⃣ CLEAR ALL (SAFE DELETE)
+    # ✅ Step 1: Confirm FIRST
+    if "confirm delete all" in message:
+        clear_all_expenses()
+        return build_response("🗑️ All transactions have been deleted.")
+
+    # ✅ Step 2: Ask confirmation
+    if "clear all" in message or "delete all" in message:
+        return build_response("⚠️ Are you sure? Type 'confirm delete all' to proceed.")
+
 
     # 1️⃣ Add expense
     if "spent" in message:
