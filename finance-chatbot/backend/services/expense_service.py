@@ -1,6 +1,7 @@
 # backend/services/expense_service.py
 
 import json
+import uuid
 from datetime import datetime
 from services.budget_service import update_budget_spent
 
@@ -16,9 +17,17 @@ def get_all_expenses():
     except FileNotFoundError:
         return []
 
+
 # Save a new expense
 def save_expense(expense):
     expenses = get_all_expenses()
+
+    # ✅ ADD UNIQUE ID
+    expense["id"] = str(uuid.uuid4())
+
+    # Optional timestamp (nice upgrade)
+    expense["created_at"] = datetime.now().isoformat()
+
     expenses.append(expense)
 
     with open(DB_FILE, "w") as f:
@@ -31,8 +40,37 @@ def save_expense(expense):
 
     update_budget_spent(expense["category"], expense["amount"])
 
+    return expense
 
-# Delete last expense
+
+# ✅ NEW: Delete by ID (for frontend)
+def delete_expense_by_id(expense_id):
+    expenses = get_all_expenses()
+
+    new_expenses = [e for e in expenses if e.get("id") != expense_id]
+
+    with open(DB_FILE, "w") as f:
+        json.dump(new_expenses, f, indent=4)
+
+    return True
+
+
+# ✅ NEW: Update by ID (for frontend)
+def update_expense_by_id(expense_id, new_data):
+    expenses = get_all_expenses()
+
+    for e in expenses:
+        if e.get("id") == expense_id:
+            e["amount"] = new_data.get("amount", e["amount"])
+            e["category"] = new_data.get("category", e["category"])
+
+    with open(DB_FILE, "w") as f:
+        json.dump(expenses, f, indent=4)
+
+    return True
+
+
+# Delete last expense (existing)
 def delete_last_expense():
     expenses = get_all_expenses()
     if not expenses:
@@ -50,7 +88,8 @@ def delete_last_expense():
 
     return last
 
-# Update an expense
+
+# Update an expense (existing chatbot logic)
 def update_expense(old_amount, old_category, new_amount, new_category):
     expenses = get_all_expenses()
     for e in expenses:
@@ -62,6 +101,7 @@ def update_expense(old_amount, old_category, new_amount, new_category):
             return e
     return None
 
+
 def deduct_expense(amount, category):
     expenses = get_all_expenses()
 
@@ -69,7 +109,6 @@ def deduct_expense(amount, category):
         if e["category"] == category and e["amount"] >= amount:
             e["amount"] -= amount
 
-            # If amount becomes 0, remove it
             if e["amount"] == 0:
                 expenses.remove(e)
 
@@ -79,6 +118,7 @@ def deduct_expense(amount, category):
             return e
 
     return None
+
 
 def save_last_action(action):
     with open(LAST_ACTION_FILE, "w") as f:
@@ -91,7 +131,7 @@ def get_last_action():
             return json.load(f)
     except:
         return None
-    
+
 
 def undo_last_action():
     action = get_last_action()
@@ -101,12 +141,10 @@ def undo_last_action():
     expenses = get_all_expenses()
 
     if action["type"] == "add":
-        # remove last added
         if expenses:
-            removed = expenses.pop()
+            expenses.pop()
 
     elif action["type"] == "delete":
-        # restore deleted
         expenses.append(action["data"])
 
     with open(DB_FILE, "w") as f:
@@ -130,7 +168,7 @@ def fix_last_category(new_category):
 
     return old_category, new_category
 
+
 def clear_all_expenses():
-    import json
-    with open("expenses.json", "w") as f:
+    with open(DB_FILE, "w") as f:
         json.dump([], f)

@@ -200,6 +200,15 @@ Used: {result['percent']}%
             )
 
         return build_response("No budget found for this category.")
+    
+    # 1️⃣2️⃣ Transaction history
+    if "history" in message:
+        from services.expense_service import get_all_expenses
+        expenses = get_all_expenses()
+        return {
+            "response": "Here is your transaction history",
+            "transactions": expenses
+        }
 
     # ❌ fallback
     return build_response("Sorry, I couldn't understand.")

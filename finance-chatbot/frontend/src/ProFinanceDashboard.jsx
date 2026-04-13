@@ -13,7 +13,7 @@ export default function ProFinanceDashboard() {
 
   const colors = ["#3b82f6", "#10b981", "#f59e0b", "#ef4444", "#8b5cf6"];
 
-  // Load initial data
+  // ✅ LOAD CHART DATA
   const loadData = async () => {
     try {
       const res = await fetch("http://127.0.0.1:8000/chat", {
@@ -27,8 +27,20 @@ export default function ProFinanceDashboard() {
     } catch {}
   };
 
+  // ✅ LOAD TRANSACTIONS FROM BACKEND
+  const fetchTransactions = async () => {
+    try {
+      const res = await fetch("http://127.0.0.1:8000/transactions");
+      const data = await res.json();
+      setTransactions(data);
+    } catch {
+      console.error("Failed to fetch transactions");
+    }
+  };
+
   useEffect(() => {
     loadData();
+    fetchTransactions(); // ✅ load real data
   }, []);
 
   const updateChart = (dataObj) => {
@@ -45,45 +57,13 @@ export default function ProFinanceDashboard() {
     setTotal(totalVal);
   };
 
-  // Simple parser for UI transaction list
-  const extractTransaction = (message) => {
-    const words = message.toLowerCase().split(" ");
-    let amount = 0;
-    let category = "misc";
-
-    if (words.includes("spent")) {
-      const idx = words.indexOf("spent") + 1;
-      amount = parseFloat(words[idx]) || 0;
-    }
-
-    if (words.includes("on")) {
-      const idx = words.indexOf("on") + 1;
-      category = words[idx] || "misc";
-    }
-
-    if (amount > 0) {
-      return {
-        id: Date.now(),
-        amount,
-        category
-      };
-    }
-
-    return null;
-  };
-
+  // ✅ SEND MESSAGE (NO LOCAL FAKE TX)
   const sendMessage = async () => {
     if (!input.trim()) return;
 
     const userMessage = input;
     setMessages(prev => [...prev, { role: "user", text: userMessage }]);
     setInput("");
-
-    // Add to transaction list (UI level)
-    const tx = extractTransaction(userMessage);
-    if (tx) {
-      setTransactions(prev => [tx, ...prev]);
-    }
 
     try {
       const res = await fetch("http://127.0.0.1:8000/chat", {
@@ -97,10 +77,38 @@ export default function ProFinanceDashboard() {
       setMessages(prev => [...prev, { role: "bot", text: data.response }]);
 
       updateChart(data.data);
+      fetchTransactions(); // ✅ refresh after adding expense
 
     } catch {
       setMessages(prev => [...prev, { role: "bot", text: "Server error ❌" }]);
     }
+  };
+
+  // ✅ DELETE
+  const deleteTransaction = async (id) => {
+    await fetch(`http://127.0.0.1:8000/transactions/${id}`, {
+      method: "DELETE"
+    });
+
+    fetchTransactions();
+  };
+
+  // ✅ EDIT
+  const editTransaction = async (id) => {
+    const newAmount = prompt("Enter new amount:");
+    const newCategory = prompt("Enter new category:");
+
+    await fetch(`http://127.0.0.1:8000/transactions/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        amount: Number(newAmount),
+        category: newCategory
+      })
+    });
+
+    fetchTransactions();
+    loadData(); // refresh chart
   };
 
   return (
@@ -108,7 +116,7 @@ export default function ProFinanceDashboard() {
 
       {/* Sidebar */}
       <div style={{ width: 220, background: "#111827", color: "white", padding: 20 }}>
-        <h2>💰 Finance AI</h2>
+        <h2>💰Personal Finance Chatbot</h2>
         <p style={{ opacity: 0.7 }}>Dashboard</p>
       </div>
 
@@ -183,7 +191,7 @@ export default function ProFinanceDashboard() {
             )}
           </div>
 
-          {/* Transactions Panel */}
+          {/* ✅ REAL TRANSACTIONS PANEL */}
           <div style={{ ...panelStyle, flex: 1 }}>
             <h3>🧾 Transactions</h3>
 
@@ -195,11 +203,19 @@ export default function ProFinanceDashboard() {
                   <div key={t.id} style={{
                     display: "flex",
                     justifyContent: "space-between",
+                    alignItems: "center",
                     padding: "8px 0",
                     borderBottom: "1px solid #eee"
                   }}>
-                    <span>{t.category}</span>
-                    <span style={{ color: "#ef4444" }}>- LKR {t.amount}</span>
+                    <div>
+                      <div>{t.category}</div>
+                      <div style={{ color: "#ef4444" }}>- LKR {t.amount}</div>
+                    </div>
+
+                    <div style={{ display: "flex", gap: 6 }}>
+                      <button onClick={() => editTransaction(t.id)}>✏️</button>
+                      <button onClick={() => deleteTransaction(t.id)}>🗑️</button>
+                    </div>
                   </div>
                 ))}
               </div>

@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from routes.chat import router  # Correct: no 'backend.' prefix
+from routes.transactions import router as transaction_router
 
 app = FastAPI()
 
@@ -17,3 +18,4 @@ app.add_middleware(
 
 # Include router
 app.include_router(router)
+app.include_router(transaction_router)

@@ -1,1 +1,37 @@
-[]
+[
+    {
+        "amount": 3000,
+        "category": "chicken",
+        "date": "2026-04-13",
+        "id": "75b5dad8-0325-4f00-a250-47e1377bff85",
+        "created_at": "2026-04-13T17:04:32.964511"
+    },
+    {
+        "amount": 2000.0,
+        "category": "cake",
+        "date": "2026-04-13",
+        "id": "31abd7c4-5ad6-4be9-b6a6-c343b5bc374d",
+        "created_at": "2026-04-13T17:04:45.984514"
+    },
+    {
+        "amount": 2000.0,
+        "category": "groceries",
+        "date": "2026-04-13",
+        "id": "3846b366-8d66-4909-bf72-d50b290ed05a",
+        "created_at": "2026-04-13T17:05:09.906133"
+    },
+    {
+        "amount": 5500.0,
+        "category": "clothes",
+        "date": "2026-04-13",
+        "id": "57c2eff6-e4a1-41a8-a0a1-43a767af91fc",
+        "created_at": "2026-04-13T17:05:26.847822"
+    },
+    {
+        "amount": 10000.0,
+        "category": "petrol",
+        "date": "2026-04-13",
+        "id": "6e332d10-f12f-4a93-8cd7-78b55549f6c9",
+        "created_at": "2026-04-13T17:06:23.997105"
+    }
+]
